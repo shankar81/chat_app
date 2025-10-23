@@ -32,7 +32,7 @@ cloudinary.config({
 });
 
 app.use("/api/auth", authRoute);
-app.use("/api/auth", messageRoute);
+app.use("/api/messages", messageRoute);
 
 app.listen(PORT, () => {
   console.log(`app is listining on ${PORT}`);
