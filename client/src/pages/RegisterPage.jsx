@@ -11,11 +11,13 @@ import {
 } from "lucide-react";
 import { Formik } from "formik";
 import { Link } from "react-router-dom";
+import AuthInnter from "../components/AuthInner";
+import { toast } from "react-hot-toast";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState();
 
-  const { signUp, useRegister } = useAuthStore();
+  const { register, useRegister } = useAuthStore();
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -37,16 +39,24 @@ const RegisterPage = () => {
             initialValues={{ fullName: "", email: "", password: "" }}
             validate={(values) => {
               const errors = {};
-              if (!values.email) {
-                errors.email = "Required";
-              } else if (
-                !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-              ) {
-                errors.email = "Invalid email address";
-              }
+
+              if (!values.fullName.trim())
+                return toast.error("Fullname is required");
+
+              if (!values.email.trim()) return toast.error("Email is required");
+              else if (!/\S+@\S+\.\S+/.test(values.email))
+                return toast.error("Invalid email format");
+
+              if (!values.password.trim())
+                return toast.error("Password is required");
+              else if (values.password.length < 6)
+                return toast.error("Password must be at least 6 chacters");
+
               return errors;
             }}
             onSubmit={(values, { setSubmitting }) => {
+              register(values);
+
               setTimeout(() => {
                 alert(JSON.stringify(values, null, 2));
                 setSubmitting(false);
@@ -55,13 +65,10 @@ const RegisterPage = () => {
           >
             {({
               values,
-              errors,
-              touched,
               handleChange,
               handleBlur,
               handleSubmit,
               isSubmitting,
-              /* and other goodies */
             }) => (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="form-control">
@@ -82,7 +89,7 @@ const RegisterPage = () => {
                       value={values.fullName}
                       onChange={handleChange}
                     />
-                    {errors.fullName && touched.fullName && errors.fullName}
+                    {/* {errors.fullName && touched.fullName && errors.fullName} */}
                   </div>
                 </div>
 
@@ -104,7 +111,7 @@ const RegisterPage = () => {
                       value={values.email}
                       onChange={handleChange}
                     />
-                    {errors.email && touched.email && errors.email}
+                    {/* {errors.email && touched.email && errors.email} */}
                   </div>
                 </div>
 
@@ -127,7 +134,7 @@ const RegisterPage = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
-                    {errors.password && touched.password && errors.password}
+                    {/* {errors.password && touched.password && errors.password} */}
                     <button
                       type="button"
                       className="absolute  z-10  inset-y-0 right-0 pr-3 flex items-center"
@@ -170,6 +177,11 @@ const RegisterPage = () => {
           </div>
         </div>
       </div>
+
+      <AuthInnter
+        title="Join our community"
+        subtitle="Connect with friends, share moments, and stay in touch with you"
+      />
     </div>
   );
 };

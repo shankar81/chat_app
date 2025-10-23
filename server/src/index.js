@@ -17,12 +17,12 @@ const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT;
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({imit: "50mb"}));
+app.use(express.urlencoded({ imit: "50mb",extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+// app.use(bodyParser.json({ limit: "50mb" }));
+// app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 //cloudinary
 cloudinary.config({
