@@ -1,6 +1,7 @@
 import User from "../models/user.model.js";
 import Message from "../models/message.model.js";
 import cloudinary from "cloudinary";
+import { getReceiverSocketId, io } from "../utils/socket.js";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -9,8 +10,6 @@ export const getAllUsers = async (req, res) => {
     const filteredUser = await User.find({ _id: { $ne: loggedInUser } }).select(
       "-password"
     );
-
-
 
     res.status(200).json(filteredUser);
   } catch (error) {
@@ -38,21 +37,17 @@ export const getmessages = async (req, res) => {
   }
 };
 
-export const sendMessage = async (req,res) => {
+export const sendMessage = async (req, res) => {
   try {
     const { text, image } = req?.body || {};
     const { id: receiverId } = req?.params;
     const senderId = req?.user._id;
-
 
     let imageUrl;
     if (image) {
       const uploadResponse = await cloudinary.uploader.upload(image);
       imageUrl = uploadResponse.secure_url;
     }
-
-    console.log(imageUrl)
-
 
     const newMessage = new Message({
       senderId,
@@ -64,8 +59,11 @@ export const sendMessage = async (req,res) => {
     await newMessage.save();
 
     // socker io code for real time data
+    const receiverSocketID = getReceiverSocketId(receiverId);
+    if (receiverSocketID)
+      io.to(receiverSocketID).emit("newMessage", newMessage);
 
-    res.status(201).json(newMessage)
+    res.status(201).json(newMessage);
   } catch (error) {
     console.log("error in Send Message controller", error.message);
     res.status(500).json({ message: "Internal server error" });

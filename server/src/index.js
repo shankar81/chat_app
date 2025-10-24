@@ -11,8 +11,9 @@ import cloudinary from "cloudinary";
 
 import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
+import { app, server } from "./utils/socket.js";
 
-const app = express();
+
 
 dotenv.config();
 
@@ -34,7 +35,7 @@ cloudinary.config({
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`app is listining on ${PORT}`);
   connectDB();
 });

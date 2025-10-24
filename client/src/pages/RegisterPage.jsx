@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import {
   Eye,
@@ -17,7 +17,7 @@ import { toast } from "react-hot-toast";
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState();
 
-  const { register, useRegister } = useAuthStore();
+  const { register } = useAuthStore();
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
@@ -37,10 +37,8 @@ const RegisterPage = () => {
 
           <Formik
             initialValues={{ fullName: "", email: "", password: "" }}
-            validate={(values) => {
-              const errors = {};
-
-              if (!values.fullName.trim())
+            onSubmit={(values, { setSubmitting }) => {
+               if (!values.fullName.trim())
                 return toast.error("Fullname is required");
 
               if (!values.email.trim()) return toast.error("Email is required");
@@ -52,13 +50,9 @@ const RegisterPage = () => {
               else if (values.password.length < 6)
                 return toast.error("Password must be at least 6 chacters");
 
-              return errors;
-            }}
-            onSubmit={(values, { setSubmitting }) => {
               register(values);
 
               setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
                 setSubmitting(false);
               }, 400);
             }}

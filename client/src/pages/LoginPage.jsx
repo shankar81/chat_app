@@ -3,8 +3,8 @@ import { useAuthStore } from "../store/useAuthStore";
 import toast from "react-hot-toast";
 import { Eye, EyeOff, Loader2, Lock, Mail, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
-import {Formik} from 'formik'
-import AuthInner from '../components/AuthInner';
+import { Formik } from "formik";
+import AuthInner from "../components/AuthInner";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -31,9 +31,7 @@ const LoginPage = () => {
 
           <Formik
             initialValues={{ email: "", password: "" }}
-            validate={(values) => {
-              const errors = {};
-
+            onSubmit={(values, { setSubmitting }) => {
               if (!values.email.trim()) return toast.error("Email is required");
               else if (!/\S+@\S+\.\S+/.test(values.email))
                 return toast.error("Invalid email format");
@@ -43,23 +41,14 @@ const LoginPage = () => {
               else if (values.password.length < 6)
                 return toast.error("Password must be at least 6 chacters");
 
-              return errors;
-            }}
-            onSubmit={(values, { setSubmitting }) => {
               login(values);
 
               setTimeout(() => {
-                alert(JSON.stringify(values, null, 2));
                 setSubmitting(false);
               }, 400);
             }}
           >
-            {({
-              values,
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-            }) => (
+            {({ values, handleChange, handleSubmit, isSubmitting }) => (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="form-control">
                   <label className="label">
