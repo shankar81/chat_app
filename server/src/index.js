@@ -8,13 +8,16 @@ import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
 import { app, server } from "./utils/socket.js";
 import { connectDB } from "./utils/db.js";
+import { fileURLToPath } from "url";
 
 import cloudinary from "cloudinary";
 
 dotenv.config();
 
 const PORT = process.env.PORT;
-const __dirname = path.resolve();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.json({ imit: "50mb" }));
 app.use(express.urlencoded({ imit: "50mb", extended: true }));
@@ -32,10 +35,10 @@ app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
 
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "client", "dist")));
+  app.use(express.static(path.join(__dirname, "../client/dist")));
 
-  app.get("/*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
+  app.get("/.*/", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "../client/dist", "index.html"));
   });
 }
 
