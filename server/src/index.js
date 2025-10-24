@@ -1,29 +1,25 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-
-import { connectDB } from "./utils/db.js";
-
 import cookieParser from "cookie-parser";
-import bodyParser from "body-parser";
-
-import cloudinary from "cloudinary";
+import path from "path";
 
 import authRoute from "./routes/auth.route.js";
 import messageRoute from "./routes/message.route.js";
 import { app, server } from "./utils/socket.js";
+import { connectDB } from "./utils/db.js";
 
-
+import cloudinary from "cloudinary";
 
 dotenv.config();
 
 const PORT = process.env.PORT;
-app.use(express.json({imit: "50mb"}));
-app.use(express.urlencoded({ imit: "50mb",extended: true }));
+const __dirname = path.resolve();
+
+app.use(express.json({ imit: "50mb" }));
+app.use(express.urlencoded({ imit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-// app.use(bodyParser.json({ limit: "50mb" }));
-// app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 //cloudinary
 cloudinary.config({
@@ -34,6 +30,14 @@ cloudinary.config({
 
 app.use("/api/auth", authRoute);
 app.use("/api/messages", messageRoute);
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../client/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client", "dist", "index.html"));
+  });
+}
 
 server.listen(PORT, () => {
   console.log(`app is listining on ${PORT}`);
